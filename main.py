@@ -2,7 +2,9 @@ import scipy.misc
 import numpy as np
 import time
 import math
+import imageio
 from random import randint, sample
+
 
 def check(x, y):
     if 0 < x < 5000:
@@ -10,17 +12,21 @@ def check(x, y):
             return True
     return False
 
+
 def insert_point(image, color, x, y):
     if check(x, y):
         image[y][x][0], image[y][x][1], image[y][x][2] = color[0], color[1], color[2]
+
 
 def horizontal_line(image, color, x_start, y, length):
     for i in range(0, length):
         insert_point(image, color, x_start + i, y)
 
+
 def vertical_line(image, color, y_start, x, length):
     for i in range(0, length):
         insert_point(image, color, x, y_start + i)
+
 
 def diagonal_line(image, color, direction, x, y, length, slope):
     base_length = length / (math.sqrt(1 + (slope * slope)))
@@ -97,9 +103,11 @@ def triangle(image, radius, centre_x, centre_y, colors, direction):
         index = x + y > 0
         image[centre_x - radius:centre_x + radius, centre_y - radius:centre_y + radius][index] = colors
 
+
 class Sequence:
     slope = []
     lenght = []
+
     def __init__(self, max_iter):
         self.slope = [i / 100.0 for i in sample(xrange(140), max_iter)]
         self.length = sample(xrange(200, 500), max_iter)
@@ -128,25 +136,13 @@ def diagonal_numpy(image, radius, start_x, start_y, colors, direction):
 
 
 def main(image):
-    #BELOW AN EXAMPLE
-    max_iter = 100
-    width = 15
-    x_start = 0
-    y_start = 0
-    direction = 1
-    color = [255, 0, 0]
-    counter = 0
-    sequence = Sequence(max_iter)
-    generative(image, sequence, counter, max_iter, width, x_start, y_start, [255, 0, 0], direction)
-    for x in range(1, 10):
-        generative(image, sequence, counter, max_iter, 10, x_start + x * 100, y_start, [100, 0, 0], direction)
-    generative(image, sequence, counter, max_iter, width, x_start + 1000, y_start, [255, 0, 0], direction)
+    for i in range(0, 10):
+        sin_horitz(image, [0, 120, 255], 0, 2000 + i, 4000, 1, 1)
 
 
 if __name__ == '__main__':
-    width, height, channels = 5000, 5000, 3
+    width, height, channels = 5000, 4000, 3
     image = np.zeros((width, height, channels), dtype=np.uint8)
     main(image)
-    image = scipy.flip(image, 0)
-    scipy.misc.imshow(image)
-    scipy.misc.imsave("image" + str(time.time()) + ".png", image)
+    image = np.flip(image, 0)
+    imageio.imwrite('image_output.jpg', image)
